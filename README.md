@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Gender Classify API
 
 A simple REST API that predicts the gender associated with a given name, powered by the [Genderize.io](https://genderize.io) service. It returns a gender prediction along with probability, sample size, and a confidence indicator.
