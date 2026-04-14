@@ -1,0 +1,137 @@
+openapi: 3.0.0
+info:
+  title: Gender Classify API
+  version: 1.0.0
+  description: A simple API that predicts the gender of a given name using the Genderize.io service.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /api/classify:
+    get:
+      summary: Classify gender by name
+      description: Takes a name as a query parameter and returns a gender prediction with probability and confidence metrics.
+      parameters:
+        - in: query
+          name: name
+          required: true
+          schema:
+            type: string
+          description: The name to classify
+          example: alice
+      responses:
+        "200":
+          description: Successful prediction or no prediction available
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - $ref: "#/components/schemas/NoPredictionResponse"
+              examples:
+                success:
+                  summary: Successful gender prediction
+                  value:
+                    status: success
+                    data:
+                      name: alice
+                      gender: female
+                      probability: 0.98
+                      sample_size: 5765
+                      is_confident: true
+                      processed_at: "2026-04-13T12:00:00.000Z"
+                noPrediction:
+                  summary: No prediction available
+                  value:
+                    status: error
+                    message: No prediction available for the provided name
+        "400":
+          description: Missing or empty name parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                status: error
+                message: Missing or empty "name" query parameter
+        "422":
+          description: Invalid name parameter type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                status: error
+                message: '"name" must be a string'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                status: error
+                message: Internal server error
+        "502":
+          description: Failed to reach the Genderize API
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                status: error
+                message: Failed to fetch response from Genderize API
+
+components:
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+              example: alice
+            gender:
+              type: string
+              enum: [male, female]
+              example: female
+            probability:
+              type: number
+              format: float
+              example: 0.98
+            sample_size:
+              type: integer
+              example: 5765
+            is_confident:
+              type: boolean
+              example: true
+            processed_at:
+              type: string
+              format: date-time
+              example: "2026-04-13T12:00:00.000Z"
+
+    NoPredictionResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          example: No prediction available for the provided name
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
