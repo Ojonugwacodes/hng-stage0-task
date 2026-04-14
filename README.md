@@ -40,6 +40,7 @@ A simple REST API that predicts the gender associated with a given name, powered
    ```
 
    The server runs on `http://localhost:3000` by default. Set the `PORT` environment variable to change it.
+   The server is also hosted on railway on `https://hng-stage0-task-production-e5a2.up.railway.app/`
 
 ## API Documentation
 
